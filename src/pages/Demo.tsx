@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -7,14 +7,66 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { CheckCircle2 } from 'lucide-react';
+import { Upload, FileText, CheckCircle2, XCircle, AlertCircle } from 'lucide-react';
+import { useToast } from "@/components/ui/use-toast";
 
 const Demo = () => {
-  const [submitted, setSubmitted] = React.useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
+  const [uploadStatus, setUploadStatus] = useState<'idle' | 'uploading' | 'success' | 'error'>('idle');
+  const [previewData, setPreviewData] = useState<string[][]>([]);
+  const { toast } = useToast();
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
+    
+    if (file) {
+      setUploadStatus('uploading');
+      
+      // Simulate processing
+      setTimeout(() => {
+        setUploadStatus('success');
+        setSubmitted(true);
+        toast({
+          title: "Demo request submitted",
+          description: "We'll contact you soon to discuss your needs.",
+        });
+      }, 1500);
+    } else {
+      toast({
+        title: "Please upload a CSV file",
+        description: "A sample CSV file is required for this demo",
+        variant: "destructive",
+      });
+    }
+  };
+  
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0];
+    
+    if (selectedFile) {
+      // Check if file is CSV
+      if (selectedFile.type !== 'text/csv' && !selectedFile.name.endsWith('.csv')) {
+        toast({
+          title: "Invalid file format",
+          description: "Please upload a CSV file",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      setFile(selectedFile);
+      
+      // Read and preview the CSV
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const text = event.target?.result as string;
+        const lines = text.split('\n').filter(line => line.trim() !== '');
+        const data = lines.slice(0, 5).map(line => line.split(','));
+        setPreviewData(data);
+      };
+      reader.readAsText(selectedFile);
+    }
   };
   
   return (
@@ -103,6 +155,66 @@ const Demo = () => {
                     </Select>
                   </div>
                   
+                  <div className="space-y-4">
+                    <Label>Upload a sample CSV file with credit data</Label>
+                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                      <Input 
+                        id="csvFile" 
+                        type="file" 
+                        accept=".csv" 
+                        onChange={handleFileChange}
+                        className="hidden"
+                      />
+                      <Label 
+                        htmlFor="csvFile" 
+                        className="cursor-pointer flex flex-col items-center justify-center gap-2"
+                      >
+                        <div className="bg-brand-purple/10 p-3 rounded-full">
+                          <Upload className="h-6 w-6 text-brand-purple" />
+                        </div>
+                        <span className="text-lg font-medium text-gray-700">
+                          {file ? file.name : "Click to upload a CSV file"}
+                        </span>
+                        <span className="text-sm text-gray-500">
+                          Upload your sample credit data for analysis
+                        </span>
+                      </Label>
+                    </div>
+                    
+                    {previewData.length > 0 && (
+                      <div className="mt-6">
+                        <h3 className="text-lg font-medium mb-3 flex items-center">
+                          <FileText className="mr-2 h-5 w-5 text-brand-purple" />
+                          CSV Preview (first 5 rows)
+                        </h3>
+                        <div className="overflow-x-auto">
+                          <table className="min-w-full bg-white border border-gray-200 rounded-lg">
+                            <thead>
+                              <tr>
+                                {previewData[0]?.map((header, i) => (
+                                  <th key={i} className="py-2 px-4 border-b text-left text-sm font-medium text-gray-700">
+                                    {header || `Column ${i+1}`}
+                                  </th>
+                                ))}
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {previewData.slice(1).map((row, i) => (
+                                <tr key={i} className={i % 2 === 0 ? "bg-gray-50" : "bg-white"}>
+                                  {row.map((cell, j) => (
+                                    <td key={j} className="py-2 px-4 border-b text-sm text-gray-700">
+                                      {cell}
+                                    </td>
+                                  ))}
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  
                   <div className="space-y-2">
                     <Label htmlFor="message">Any specific questions or requirements?</Label>
                     <Textarea 
@@ -112,8 +224,12 @@ const Demo = () => {
                     />
                   </div>
                   
-                  <Button type="submit" className="w-full bg-brand-purple hover:bg-brand-purple/90">
-                    Request Demo
+                  <Button 
+                    type="submit" 
+                    className="w-full bg-brand-purple hover:bg-brand-purple/90"
+                    disabled={uploadStatus === 'uploading' || !file}
+                  >
+                    {uploadStatus === 'uploading' ? 'Processing...' : 'Request Demo'}
                   </Button>
                 </form>
               </div>

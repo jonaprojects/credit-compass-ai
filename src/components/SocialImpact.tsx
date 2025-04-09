@@ -5,7 +5,16 @@ import {
   GraduationCap, 
   Home, 
   Globe, 
-  TrendingUp 
+  TrendingUp,
+  ShieldCheck,
+  ShieldX,
+  DollarSign,
+  TrendingDown,
+  Handshake,
+  BarChart,
+  Wrench,
+  ShieldOff,
+  Users
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
@@ -22,21 +31,21 @@ const SocialImpact = () => {
                   <div className="bg-white p-6 rounded-lg shadow-md">
                     <div className="flex items-center space-x-3 mb-4">
                       <div className="bg-brand-purple/20 p-2 rounded-lg">
-                        <Heart className="h-6 w-6 text-brand-purple" />
+                        <ShieldCheck className="h-6 w-6 text-brand-purple" />
                       </div>
-                      <h4 className="font-semibold">Financial Inclusion</h4>
+                      <h4 className="font-semibold">Enhanced Identification</h4>
                     </div>
-                    <p className="text-gray-600">Providing access to credit for 15,000+ underserved individuals.</p>
+                    <p className="text-gray-600">Identifying reliable borrowers through advanced AI algorithms.</p>
                   </div>
                   
                   <div className="bg-white p-6 rounded-lg shadow-md">
                     <div className="flex items-center space-x-3 mb-4">
                       <div className="bg-brand-blue/20 p-2 rounded-lg">
-                        <GraduationCap className="h-6 w-6 text-brand-blue" />
+                        <ShieldX className="h-6 w-6 text-brand-blue" />
                       </div>
-                      <h4 className="font-semibold">Education Access</h4>
+                      <h4 className="font-semibold">Risk Protection</h4>
                     </div>
-                    <p className="text-gray-600">Financing 10,000+ educational opportunities for underserved students.</p>
+                    <p className="text-gray-600">Protecting companies from high-risk clients through predictive analytics.</p>
                   </div>
                 </div>
                 
@@ -44,21 +53,21 @@ const SocialImpact = () => {
                   <div className="bg-white p-6 rounded-lg shadow-md">
                     <div className="flex items-center space-x-3 mb-4">
                       <div className="bg-brand-purple/20 p-2 rounded-lg">
-                        <Home className="h-6 w-6 text-brand-purple" />
+                        <TrendingUp className="h-6 w-6 text-brand-purple" />
                       </div>
-                      <h4 className="font-semibold">Housing Stability</h4>
+                      <h4 className="font-semibold">Improved Predictions</h4>
                     </div>
-                    <p className="text-gray-600">Helped 5,000+ families secure stable housing through inclusive lending.</p>
+                    <p className="text-gray-600">Better loan repayment predictions with multidimensional data analysis.</p>
                   </div>
                   
                   <div className="bg-white p-6 rounded-lg shadow-md">
                     <div className="flex items-center space-x-3 mb-4">
                       <div className="bg-brand-blue/20 p-2 rounded-lg">
-                        <TrendingUp className="h-6 w-6 text-brand-blue" />
+                        <TrendingDown className="h-6 w-6 text-brand-blue" />
                       </div>
-                      <h4 className="font-semibold">Economic Growth</h4>
+                      <h4 className="font-semibold">Reduced Defaults</h4>
                     </div>
-                    <p className="text-gray-600">Supporting over 8,000 small businesses in underserved communities.</p>
+                    <p className="text-gray-600">Significantly reducing default rates through smarter lending decisions.</p>
                   </div>
                 </div>
               </div>
@@ -76,27 +85,81 @@ const SocialImpact = () => {
             </p>
             
             <div className="space-y-6 mb-8">
-              <div className="flex space-x-4">
-                <div className="bg-brand-purple/20 p-2 h-fit rounded-lg">
-                  <Globe className="h-6 w-6 text-brand-purple" />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="flex space-x-3">
+                  <div className="bg-brand-purple/20 p-2 h-fit rounded-lg">
+                    <DollarSign className="h-5 w-5 text-brand-purple" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold">Lower Default Costs</h3>
+                    <p className="text-gray-600 text-sm">
+                      Reducing the financial burden of loan defaults for lenders.
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-xl font-semibold mb-2">Global Impact</h3>
-                  <p className="text-gray-600">
-                    Our platform has helped financial institutions approve loans for over 50,000 individuals who would have been rejected by traditional credit scoring models.
-                  </p>
+                
+                <div className="flex space-x-3">
+                  <div className="bg-brand-blue/20 p-2 h-fit rounded-lg">
+                    <Handshake className="h-5 w-5 text-brand-blue" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold">Building Trust</h3>
+                    <p className="text-gray-600 text-sm">
+                      Creating stronger relationships between borrowers and lenders.
+                    </p>
+                  </div>
                 </div>
               </div>
               
-              <div className="flex space-x-4">
-                <div className="bg-brand-blue/20 p-2 h-fit rounded-lg">
-                  <TrendingUp className="h-6 w-6 text-brand-blue" />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="flex space-x-3">
+                  <div className="bg-brand-purple/20 p-2 h-fit rounded-lg">
+                    <BarChart className="h-5 w-5 text-brand-purple" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold">Optimized Assessment</h3>
+                    <p className="text-gray-600 text-sm">
+                      Fine-tuning credit risk assessment with AI algorithms.
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-xl font-semibold mb-2">Proven Results</h3>
-                  <p className="text-gray-600">
-                    Institutions using our platform report a 35% increase in loan approvals for underserved populations while maintaining or improving repayment rates.
-                  </p>
+                
+                <div className="flex space-x-3">
+                  <div className="bg-brand-blue/20 p-2 h-fit rounded-lg">
+                    <Wrench className="h-5 w-5 text-brand-blue" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold">Minimized Errors</h3>
+                    <p className="text-gray-600 text-sm">
+                      Reducing human error in loan approval decisions.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="flex space-x-3">
+                  <div className="bg-brand-purple/20 p-2 h-fit rounded-lg">
+                    <ShieldOff className="h-5 w-5 text-brand-purple" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold">Fraud Prevention</h3>
+                    <p className="text-gray-600 text-sm">
+                      Identifying and preventing fraudulent loan applications.
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="flex space-x-3">
+                  <div className="bg-brand-blue/20 p-2 h-fit rounded-lg">
+                    <Users className="h-5 w-5 text-brand-blue" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold">Fair Assessment</h3>
+                    <p className="text-gray-600 text-sm">
+                      Providing accessible and fair loan assessment for all.
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
