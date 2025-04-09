@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, FileText } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const Navbar = () => {
@@ -17,7 +17,10 @@ const Navbar = () => {
         {/* Desktop Menu */}
         <div className="hidden md:flex items-center space-x-8">
           <Link to="/" className="text-gray-700 hover:text-brand-purple transition-colors">Home</Link>
-          <Link to="/features" className="text-gray-700 hover:text-brand-purple transition-colors">Features</Link>
+          <Link to="/demo" className="text-gray-700 hover:text-brand-purple transition-colors flex items-center gap-1">
+            <FileText className="w-4 h-4" />
+            Demo
+          </Link>
           <Link to="/impact" className="text-gray-700 hover:text-brand-purple transition-colors">Social Impact</Link>
           <Link to="/pricing" className="text-gray-700 hover:text-brand-purple transition-colors">Pricing</Link>
           <div className="flex space-x-4">
@@ -55,11 +58,12 @@ const Navbar = () => {
               Home
             </Link>
             <Link 
-              to="/features" 
-              className="text-gray-700 hover:text-brand-purple transition-colors py-2"
+              to="/demo" 
+              className="text-gray-700 hover:text-brand-purple transition-colors py-2 flex items-center gap-1"
               onClick={() => setIsMenuOpen(false)}
             >
-              Features
+              <FileText className="w-4 h-4" />
+              Demo
             </Link>
             <Link 
               to="/impact" 
