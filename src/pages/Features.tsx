@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { useToast } from "@/components/ui/use-toast";
 import { 
   Upload, 
@@ -13,16 +12,42 @@ import {
   AlertTriangle,
   BarChart3,
   ShieldCheck,
-  Download
+  Download,
+  Clock,
+  Wallet,
+  CreditCard,
+  DollarSign,
+  ThumbsUp,
+  ThumbsDown
 } from 'lucide-react';
 import FeaturesComponent from '@/components/Features';
+
+// Define types for the API response
+interface CreditAssessmentResponse {
+  loan_status_binary: number;
+  delinq_flag: number;
+  dti_class: number;
+  revol_util_class: number;
+  annual_inc_class: number;
+  final_status: number;
+}
+
+// Fallback data in case the API request fails
+const fallbackData: CreditAssessmentResponse = {
+  loan_status_binary: 1,
+  delinq_flag: 0,
+  dti_class: 1,
+  revol_util_class: 2,
+  annual_inc_class: 1,
+  final_status: 1
+};
 
 const Features = () => {
   const [file, setFile] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
   const [previewData, setPreviewData] = useState<string[][]>([]);
-  const [results, setResults] = useState<any>(null);
+  const [results, setResults] = useState<CreditAssessmentResponse | null>(null);
   const { toast } = useToast();
   
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -41,6 +66,7 @@ const Features = () => {
       
       setFile(selectedFile);
       setIsComplete(false);
+      setResults(null);
       
       // Read and preview the CSV
       const reader = new FileReader();
@@ -54,7 +80,7 @@ const Features = () => {
     }
   };
   
-  const processData = () => {
+  const processData = async () => {
     if (!file) {
       toast({
         title: "No file selected",
@@ -66,38 +92,51 @@ const Features = () => {
     
     setIsProcessing(true);
     
-    // Simulate AI processing
-    setTimeout(() => {
-      // Create dummy results
-      const mockResults = {
-        overallRiskScore: 72,
-        fraudProbability: 0.08,
-        approvalRecommendation: "Approve",
-        riskFactors: [
-          { factor: "Income Verification", score: 85 },
-          { factor: "Credit History", score: 68 },
-          { factor: "Alternative Data", score: 76 },
-          { factor: "Fraud Indicators", score: 92 }
-        ],
-        insights: [
-          "Applicant shows strong payment patterns on utility bills",
-          "Mobile usage data indicates stability",
-          "Some minor inconsistencies in reported income",
-          "Low probability of fraudulent application"
-        ],
-        inclusionScore: 78,
-        socialImpact: "Medium-High"
-      };
+    try {
+      // Create form data to send the file
+      const formData = new FormData();
+      formData.append('file', file);
       
-      setResults(mockResults);
-      setIsProcessing(false);
-      setIsComplete(true);
-      
-      toast({
-        title: "Analysis Complete",
-        description: "Credit assessment has been successfully processed",
+      // Make API request
+      const response = await fetch('http://127.0.0.1:8000/customer/1', {
+        method: 'POST',
+        body: formData,
       });
-    }, 3000);
+      
+      let assessmentData: CreditAssessmentResponse;
+      
+      if (response.ok) {
+        assessmentData = await response.json();
+        toast({
+          title: "Analysis Complete",
+          description: "Credit assessment has been successfully processed",
+        });
+      } else {
+        // If API request fails, use fallback data
+        console.error('API request failed, using fallback data');
+        assessmentData = fallbackData;
+        toast({
+          title: "Using Demo Data",
+          description: "Could not connect to server, using demonstration data instead",
+          variant: "destructive",
+        });
+      }
+      
+      setResults(assessmentData);
+      setIsComplete(true);
+    } catch (error) {
+      console.error('Error processing data:', error);
+      // Use fallback data in case of error
+      setResults(fallbackData);
+      setIsComplete(true);
+      toast({
+        title: "Using Demo Data",
+        description: "Could not connect to server, using demonstration data instead",
+        variant: "destructive",
+      });
+    } finally {
+      setIsProcessing(false);
+    }
   };
   
   const resetDemo = () => {
@@ -105,6 +144,16 @@ const Features = () => {
     setPreviewData([]);
     setResults(null);
     setIsComplete(false);
+  };
+
+  // Helper function to convert numeric class to text representation
+  const getClassText = (classValue: number): string => {
+    switch (classValue) {
+      case 0: return 'Low';
+      case 1: return 'Medium';
+      case 2: return 'High';
+      default: return 'Unknown';
+    }
   };
   
   return (
@@ -234,138 +283,179 @@ const Features = () => {
                     </Button>
                   </div>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    {/* Risk Score */}
-                    <div className="bg-white border rounded-xl shadow-sm p-6">
-                      <h3 className="text-sm font-medium text-gray-500 mb-2">Overall Risk Score</h3>
-                      <div className="flex items-end gap-2">
-                        <span className="text-4xl font-bold">{results.overallRiskScore}</span>
-                        <span className="text-sm text-gray-500">/100</span>
+                  {results && (
+                    <div className="space-y-8">
+                      {/* Final Recommendation */}
+                      <div className="bg-gradient-to-r from-brand-purple/10 to-brand-blue/10 rounded-xl p-6">
+                        <h3 className="text-xl font-semibold mb-4">AI Recommendation</h3>
+                        <div className="flex items-center gap-3">
+                          {results.final_status === 1 ? (
+                            <>
+                              <div className="bg-green-100 p-3 rounded-full">
+                                <ThumbsUp className="h-8 w-8 text-green-600" />
+                              </div>
+                              <div>
+                                <p className="text-2xl font-bold text-green-600">Approve Loan</p>
+                                <p className="text-gray-600">The AI model recommends approving this loan application.</p>
+                              </div>
+                            </>
+                          ) : (
+                            <>
+                              <div className="bg-red-100 p-3 rounded-full">
+                                <ThumbsDown className="h-8 w-8 text-red-600" />
+                              </div>
+                              <div>
+                                <p className="text-2xl font-bold text-red-600">Decline Loan</p>
+                                <p className="text-gray-600">The AI model recommends declining this loan application.</p>
+                              </div>
+                            </>
+                          )}
+                        </div>
                       </div>
-                      <div className="mt-4 h-2 bg-gray-200 rounded-full overflow-hidden">
-                        <div 
-                          className={`h-full rounded-full ${
-                            results.overallRiskScore > 70 ? 'bg-green-500' : 
-                            results.overallRiskScore > 50 ? 'bg-yellow-500' : 'bg-red-500'
-                          }`}
-                          style={{ width: `${results.overallRiskScore}%` }}
-                        ></div>
-                      </div>
-                    </div>
-                    
-                    {/* Fraud Assessment */}
-                    <div className="bg-white border rounded-xl shadow-sm p-6">
-                      <h3 className="text-sm font-medium text-gray-500 mb-2">Fraud Probability</h3>
-                      <div className="flex items-center gap-2">
-                        <span className="text-4xl font-bold">
-                          {(results.fraudProbability * 100).toFixed(1)}%
-                        </span>
-                        <ShieldCheck className={`h-6 w-6 ${
-                          results.fraudProbability < 0.15 ? 'text-green-500' : 
-                          results.fraudProbability < 0.3 ? 'text-yellow-500' : 'text-red-500'
-                        }`} />
-                      </div>
-                      <p className="mt-2 text-sm text-gray-600">
-                        {results.fraudProbability < 0.15 ? 'Low fraud risk' : 
-                         results.fraudProbability < 0.3 ? 'Medium fraud risk' : 'High fraud risk'}
-                      </p>
-                    </div>
-                    
-                    {/* Recommendation */}
-                    <div className="bg-white border rounded-xl shadow-sm p-6">
-                      <h3 className="text-sm font-medium text-gray-500 mb-2">Recommendation</h3>
-                      <div className="flex items-center gap-2">
-                        {results.approvalRecommendation === "Approve" ? (
-                          <>
-                            <CheckCircle2 className="h-6 w-6 text-green-500" />
-                            <span className="text-2xl font-bold text-green-500">Approve</span>
-                          </>
-                        ) : (
-                          <>
-                            <AlertTriangle className="h-6 w-6 text-red-500" />
-                            <span className="text-2xl font-bold text-red-500">Decline</span>
-                          </>
-                        )}
-                      </div>
-                      <p className="mt-2 text-sm text-gray-600">
-                        Based on risk profile and inclusion factors
-                      </p>
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-                    {/* Risk Factors */}
-                    <div className="bg-white border rounded-xl shadow-sm p-6">
-                      <h3 className="text-lg font-medium mb-4">Risk Factors</h3>
-                      <div className="space-y-4">
-                        {results.riskFactors.map((factor: any, i: number) => (
-                          <div key={i}>
-                            <div className="flex justify-between items-center mb-1">
-                              <span className="text-sm font-medium">{factor.factor}</span>
-                              <span className="text-sm font-medium">{factor.score}/100</span>
+                      
+                      {/* Detailed Assessment Cards */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {/* Loan Status Card */}
+                        <div className="bg-white rounded-xl shadow-sm p-6 border">
+                          <div className="flex items-start gap-3">
+                            <div className="bg-gray-100 p-2 rounded-full">
+                              <CreditCard className="h-6 w-6 text-brand-purple" />
                             </div>
-                            <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-                              <div 
-                                className={`h-full rounded-full ${
-                                  factor.score > 70 ? 'bg-green-500' : 
-                                  factor.score > 50 ? 'bg-yellow-500' : 'bg-red-500'
-                                }`}
-                                style={{ width: `${factor.score}%` }}
-                              ></div>
+                            <div>
+                              <h4 className="text-gray-500 text-sm">Loan Status</h4>
+                              <p className={`text-lg font-semibold ${results.loan_status_binary === 1 ? 'text-green-600' : 'text-red-600'}`}>
+                                {results.loan_status_binary === 1 ? 'Approval Recommended' : 'Denial Recommended'}
+                              </p>
                             </div>
                           </div>
-                        ))}
+                        </div>
+                        
+                        {/* Delinquency Risk Card */}
+                        <div className="bg-white rounded-xl shadow-sm p-6 border">
+                          <div className="flex items-start gap-3">
+                            <div className="bg-gray-100 p-2 rounded-full">
+                              <AlertTriangle className="h-6 w-6 text-brand-blue" />
+                            </div>
+                            <div>
+                              <h4 className="text-gray-500 text-sm">Delinquency Risk</h4>
+                              <p className={`text-lg font-semibold ${results.delinq_flag === 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                {results.delinq_flag === 0 ? 'Low Risk' : 'High Risk'}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {/* Debt-to-Income Ratio Card */}
+                        <div className="bg-white rounded-xl shadow-sm p-6 border">
+                          <div className="flex items-start gap-3">
+                            <div className="bg-gray-100 p-2 rounded-full">
+                              <Wallet className="h-6 w-6 text-brand-purple" />
+                            </div>
+                            <div>
+                              <h4 className="text-gray-500 text-sm">Debt-to-Income Ratio</h4>
+                              <p className={`text-lg font-semibold ${
+                                results.dti_class === 0 ? 'text-green-600' : 
+                                results.dti_class === 1 ? 'text-yellow-600' : 'text-red-600'
+                              }`}>
+                                {getClassText(results.dti_class)}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {/* Revolver Utilization Card */}
+                        <div className="bg-white rounded-xl shadow-sm p-6 border">
+                          <div className="flex items-start gap-3">
+                            <div className="bg-gray-100 p-2 rounded-full">
+                              <ShieldCheck className="h-6 w-6 text-brand-blue" />
+                            </div>
+                            <div>
+                              <h4 className="text-gray-500 text-sm">Revolver Utilization</h4>
+                              <p className={`text-lg font-semibold ${
+                                results.revol_util_class === 0 ? 'text-green-600' : 
+                                results.revol_util_class === 1 ? 'text-yellow-600' : 'text-red-600'
+                              }`}>
+                                {getClassText(results.revol_util_class)}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {/* Annual Income Card */}
+                        <div className="bg-white rounded-xl shadow-sm p-6 border">
+                          <div className="flex items-start gap-3">
+                            <div className="bg-gray-100 p-2 rounded-full">
+                              <DollarSign className="h-6 w-6 text-brand-purple" />
+                            </div>
+                            <div>
+                              <h4 className="text-gray-500 text-sm">Annual Income</h4>
+                              <p className={`text-lg font-semibold ${
+                                results.annual_inc_class === 0 ? 'text-red-600' : 
+                                results.annual_inc_class === 1 ? 'text-yellow-600' : 'text-green-600'
+                              }`}>
+                                {getClassText(results.annual_inc_class)}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {/* Processing Time Card */}
+                        <div className="bg-white rounded-xl shadow-sm p-6 border">
+                          <div className="flex items-start gap-3">
+                            <div className="bg-gray-100 p-2 rounded-full">
+                              <Clock className="h-6 w-6 text-brand-blue" />
+                            </div>
+                            <div>
+                              <h4 className="text-gray-500 text-sm">Processing Time</h4>
+                              <p className="text-lg font-semibold text-gray-700">
+                                Instant
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Assessment Explanation */}
+                      <div className="bg-white rounded-xl shadow-sm p-6 border">
+                        <h3 className="text-lg font-semibold mb-4">Credit Assessment Explanation</h3>
+                        <div className="space-y-3">
+                          <p className="text-gray-600">
+                            This assessment was generated using advanced machine learning algorithms that analyze various 
+                            aspects of the applicant's financial profile.
+                          </p>
+                          <ul className="list-disc pl-5 space-y-1 text-gray-600">
+                            <li>
+                              <span className="font-medium">Loan Status:</span> Indicates whether the applicant meets the 
+                              basic criteria for loan approval.
+                            </li>
+                            <li>
+                              <span className="font-medium">Delinquency Risk:</span> Evaluates the likelihood of the 
+                              applicant missing payments based on historical data.
+                            </li>
+                            <li>
+                              <span className="font-medium">Debt-to-Income Ratio:</span> Measures the proportion of the 
+                              applicant's income that goes toward paying debts.
+                            </li>
+                            <li>
+                              <span className="font-medium">Revolver Utilization:</span> Assesses how much of the 
+                              available credit the applicant is currently using.
+                            </li>
+                            <li>
+                              <span className="font-medium">Annual Income:</span> Evaluates the applicant's yearly 
+                              income against loan requirements.
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                      
+                      <div className="flex justify-center">
+                        <Button className="bg-brand-purple hover:bg-brand-purple/90" size="lg">
+                          <Download className="mr-2 h-4 w-4" />
+                          Download Full Report
+                        </Button>
                       </div>
                     </div>
-                    
-                    {/* AI Insights */}
-                    <div className="bg-white border rounded-xl shadow-sm p-6">
-                      <h3 className="text-lg font-medium mb-4">AI Insights</h3>
-                      <ul className="space-y-2">
-                        {results.insights.map((insight: string, i: number) => (
-                          <li key={i} className="flex items-start gap-2">
-                            <span className="text-brand-purple">•</span>
-                            <span className="text-sm">{insight}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-                  
-                  <div className="bg-gradient-to-r from-brand-purple/10 to-brand-blue/10 rounded-xl p-6 mb-6">
-                    <h3 className="text-lg font-medium mb-3">Social Impact Assessment</h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <p className="text-sm text-gray-700 mb-1">Inclusion Score</p>
-                        <div className="flex items-end gap-2">
-                          <span className="text-3xl font-bold">{results.inclusionScore}</span>
-                          <span className="text-sm text-gray-500">/100</span>
-                        </div>
-                        <div className="mt-2 h-2 bg-white/50 rounded-full overflow-hidden">
-                          <div 
-                            className="h-full bg-brand-purple rounded-full"
-                            style={{ width: `${results.inclusionScore}%` }}
-                          ></div>
-                        </div>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-700 mb-1">Social Impact</p>
-                        <div className="bg-white/50 rounded-lg p-3 inline-block">
-                          <span className="text-lg font-semibold text-brand-purple">{results.socialImpact}</span>
-                        </div>
-                        <p className="text-xs text-gray-600 mt-2">
-                          This application would contribute positively to financial inclusion goals
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="flex justify-center">
-                    <Button className="bg-brand-purple hover:bg-brand-purple/90" size="lg">
-                      <Download className="mr-2 h-4 w-4" />
-                      Download Full Report
-                    </Button>
-                  </div>
+                  )}
                 </div>
               )}
             </div>
