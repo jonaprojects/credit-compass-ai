@@ -23,13 +23,13 @@ const CTA = () => {
               asChild
             >
               <Link to="/demo">
-                Request a Demo
+                Try Demo
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
             <Button
               variant="outline"
-              className="border-white text-black hover:bg-white/10 text-lg h-12 px-8"
+              className="border-white text-white hover:bg-white/10 text-lg h-12 px-8"
               asChild
             >
               <Link to="/contact">Contact Sales</Link>

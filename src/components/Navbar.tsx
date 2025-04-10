@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Menu, X, FileText, BarChart3 } from 'lucide-react';
+import { Menu, X, BarChart3, PlayCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const Navbar = () => {
@@ -20,6 +20,10 @@ const Navbar = () => {
           <Link to="/features" className="text-gray-700 hover:text-brand-purple transition-colors flex items-center gap-1">
             <BarChart3 className="w-4 h-4" />
             Features
+          </Link>
+          <Link to="/demo" className="text-gray-700 hover:text-brand-purple transition-colors flex items-center gap-1">
+            <PlayCircle className="w-4 h-4" />
+            Try Demo
           </Link>
           <Link to="/impact" className="text-gray-700 hover:text-brand-purple transition-colors">Social Impact</Link>
           <Link to="/pricing" className="text-gray-700 hover:text-brand-purple transition-colors">Pricing</Link>
@@ -64,6 +68,14 @@ const Navbar = () => {
             >
               <BarChart3 className="w-4 h-4" />
               Features
+            </Link>
+            <Link 
+              to="/demo" 
+              className="text-gray-700 hover:text-brand-purple transition-colors py-2 flex items-center gap-1"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              <PlayCircle className="w-4 h-4" />
+              Try Demo
             </Link>
             <Link 
               to="/impact" 
