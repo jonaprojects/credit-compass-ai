@@ -11,7 +11,7 @@ const Navbar = () => {
     <nav className="bg-white/90 backdrop-blur-md sticky top-0 z-50 shadow-sm py-4">
       <div className="container-custom flex justify-between items-center">
         <Link to="/" className="flex items-center space-x-2">
-          <span className="text-2xl font-bold gradient-text">CreditCompass AI</span>
+          <span className="text-2xl font-bold gradient-text">Credit Advisor</span>
         </Link>
         
         {/* Desktop Menu */}
@@ -20,10 +20,6 @@ const Navbar = () => {
           <Link to="/demo" className="text-gray-700 hover:text-brand-purple transition-colors flex items-center gap-1">
             <FileText className="w-4 h-4" />
             Demo
-          </Link>
-          <Link to="/features" className="text-gray-700 hover:text-brand-purple transition-colors flex items-center gap-1">
-            <BarChart3 className="w-4 h-4" />
-            Features
           </Link>
           <Link to="/impact" className="text-gray-700 hover:text-brand-purple transition-colors">Social Impact</Link>
           <Link to="/pricing" className="text-gray-700 hover:text-brand-purple transition-colors">Pricing</Link>
@@ -68,14 +64,6 @@ const Navbar = () => {
             >
               <FileText className="w-4 h-4" />
               Demo
-            </Link>
-            <Link 
-              to="/features" 
-              className="text-gray-700 hover:text-brand-purple transition-colors py-2 flex items-center gap-1"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              <BarChart3 className="w-4 h-4" />
-              Features
             </Link>
             <Link 
               to="/impact" 

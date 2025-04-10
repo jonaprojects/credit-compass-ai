@@ -9,7 +9,7 @@ const Footer = () => {
       <div className="container-custom">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
           <div>
-            <h3 className="text-xl font-bold mb-4">CreditCompass AI</h3>
+            <h3 className="text-xl font-bold mb-4">Credit Advisor</h3>
             <p className="text-gray-300 mb-4">
               AI-powered credit risk assessment for smarter, fairer, and more inclusive lending.
             </p>
@@ -32,11 +32,6 @@ const Footer = () => {
           <div>
             <h4 className="text-lg font-semibold mb-4">Platform</h4>
             <ul className="space-y-2">
-              <li>
-                <Link to="/features" className="text-gray-300 hover:text-white transition-colors">
-                  Features
-                </Link>
-              </li>
               <li>
                 <Link to="/pricing" className="text-gray-300 hover:text-white transition-colors">
                   Pricing
@@ -110,7 +105,7 @@ const Footer = () => {
         
         <div className="border-t border-gray-700 pt-8">
           <p className="text-gray-400 text-center">
-            &copy; {new Date().getFullYear()} CreditCompass AI. All rights reserved.
+            &copy; {new Date().getFullYear()} Credit Advisor. All rights reserved.
           </p>
         </div>
       </div>
