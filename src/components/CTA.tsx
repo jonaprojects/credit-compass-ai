@@ -29,7 +29,7 @@ const CTA = () => {
             </Button>
             <Button
               variant="outline"
-              className="border-white text-white hover:bg-white/10 text-lg h-12 px-8"
+              className="border-white text-black hover:bg-white/10 hover:text-white text-lg h-12 px-8"
               asChild
             >
               <Link to="/contact">Contact Sales</Link>

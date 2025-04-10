@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import Navbar from '@/components/Navbar';
@@ -56,12 +57,13 @@ const Demo = () => {
       setResults(null);
       setServerWarning(false);
       
-      // Read and preview the CSV
+      // Read and preview the CSV - modified to only show first row
       const reader = new FileReader();
       reader.onload = (event) => {
         const text = event.target?.result as string;
         const lines = text.split('\n').filter(line => line.trim() !== '');
-        const data = lines.slice(0, 5).map(line => line.split(','));
+        // Only take the first row (headers) and not 5 rows
+        const data = lines.slice(0, 2).map(line => line.split(','));
         setPreviewData(data);
       };
       reader.readAsText(selectedFile);
@@ -197,7 +199,7 @@ const Demo = () => {
                       <div className="mt-8">
                         <h3 className="text-lg font-medium mb-3 flex items-center">
                           <FileText className="mr-2 h-5 w-5 text-brand-purple" />
-                          CSV Preview (first 5 rows)
+                          CSV Preview (first row)
                         </h3>
                         <div className="overflow-x-auto bg-gray-50 rounded-lg border border-gray-200">
                           <table className="min-w-full">
@@ -211,8 +213,8 @@ const Demo = () => {
                               </tr>
                             </thead>
                             <tbody>
-                              {previewData.slice(1).map((row, i) => (
-                                <tr key={i} className={i % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                              {previewData.slice(1, 2).map((row, i) => (
+                                <tr key={i} className="bg-white">
                                   {row.map((cell, j) => (
                                     <td key={j} className="py-2 px-4 border-b text-sm text-gray-700">
                                       {cell || "-"}
