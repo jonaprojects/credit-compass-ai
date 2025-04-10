@@ -1,12 +1,12 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Upload, FileText, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Upload, FileText, CheckCircle2, AlertCircle, AlertTriangle } from 'lucide-react';
 import { useToast } from "@/components/ui/use-toast";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 // Define types for the API response
 interface CreditAssessmentResponse {
@@ -34,6 +34,7 @@ const Demo = () => {
   const [isComplete, setIsComplete] = useState(false);
   const [previewData, setPreviewData] = useState<string[][]>([]);
   const [results, setResults] = useState<CreditAssessmentResponse | null>(null);
+  const [serverWarning, setServerWarning] = useState(false);
   const { toast } = useToast();
   
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -53,6 +54,7 @@ const Demo = () => {
       setFile(selectedFile);
       setIsComplete(false);
       setResults(null);
+      setServerWarning(false);
       
       // Read and preview the CSV
       const reader = new FileReader();
@@ -101,11 +103,7 @@ const Demo = () => {
         // If API request fails, use fallback data
         console.error('API request failed, using fallback data');
         assessmentData = fallbackData;
-        toast({
-          title: "Using Demo Data",
-          description: "Could not connect to server, using demonstration data instead",
-          variant: "destructive",
-        });
+        setServerWarning(true);
       }
       
       setResults(assessmentData);
@@ -115,11 +113,7 @@ const Demo = () => {
       // Use fallback data in case of error
       setResults(fallbackData);
       setIsComplete(true);
-      toast({
-        title: "Using Demo Data",
-        description: "Could not connect to server, using demonstration data instead",
-        variant: "destructive",
-      });
+      setServerWarning(true);
     } finally {
       setIsProcessing(false);
     }
@@ -130,6 +124,7 @@ const Demo = () => {
     setPreviewData([]);
     setResults(null);
     setIsComplete(false);
+    setServerWarning(false);
   };
 
   // Helper function to convert numeric class to text representation
@@ -268,6 +263,15 @@ const Demo = () => {
                       Start New Analysis
                     </Button>
                   </div>
+                  
+                  {serverWarning && (
+                    <Alert className="bg-yellow-50 border-yellow-200 mb-6">
+                      <AlertTriangle className="h-5 w-5 text-yellow-600" />
+                      <AlertDescription className="text-yellow-700">
+                        Warning: Unable to access the server at the moment. Please try again later.
+                      </AlertDescription>
+                    </Alert>
+                  )}
                   
                   {results && (
                     <div className="space-y-8">
